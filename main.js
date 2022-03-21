@@ -56,47 +56,72 @@ const posts = [
     }
 ];
 
-//Milestone 1
-//Creiamo il nostro array di oggetti che rappresentano ciascun post. Ogni post dovrà avere le informazioni necessarie per
-//stampare la relativa card: id del post, numero progressivo da 1 a n nome autore, foto autore, data in formato americano (mm-gg-yyyy),
-//testo del post, immagine (non tutti i post devono avere una immagine), numero di likes.
-//Non è necessario creare date casuali, per le immagini va bene utilizzare qualsiasi servizio di placeholder ad es. Unsplash
-//(https://unsplash.it/300/300?image=<id>)
 
-let newPosts = "";
+const arrayLike = [];
+const wrapperElementi = document.getElementById('container');
 
-for (let i = 0; i < posts.length; i++) {
-newPosts += `
-<div class="post">
-    <div class="post__header">
-        <div class="post-meta">                    
-            <div class="post-meta__icon">
-                <img class="profile-pic" src="https://unsplash.it/300/300?image=15" alt="Phil Mangione">                    
+function generaPost(elementiPost){
+    const { id, author, content, media, likes, created} = elementiPost;
+    return `
+    <div class="post">
+        <div class="post__header">
+            <div class="post-meta">
+                <div class="post-meta__icon">
+                    <img class="profile-pic" src="${author.image}" alt="${author.name}">
+                </div>
+                <div class="post-meta__data">
+                    <div class="post-meta__author">${author.name}</div>
+                    <div class="post-meta__time">${created}</div>
+                </div>
             </div>
-            <div class="post-meta__data">
-                <div class="post-meta__author">Phil Mangione</div>
-                <div class="post-meta__time">${posts[i]["created"]}</div>
-            </div>                    
+        </div>
+        <div class="post__text">${content}</div>
+        <div class="post__image">
+            <img src="${media}" alt="Immagine post con id ${id}">
+        </div>
+        <div class="post__footer">
+            <div class="likes js-likes">
+                <div class="likes__cta">
+                    <a class="like-button  js-like-button" href="#" data-postid="${id}">
+                        <i class="like-button__icon fas fa-thumbs-up" aria-hidden="true"></i>
+                        <span class="like-button__label">Mi Piace</span>
+                    </a>
+                </div>
+                <div class="likes__counter">
+                    Piace a <b id="like-counter-${id}" class="js-likes-counter">${likes}</b> persone
+                </div>
+            </div>
         </div>
     </div>
-    <div class="post__text">${posts[i]["content"]}</div>
-    <div class="post__image">
-        <img src="${posts[i]["media"]}" alt="">
-    </div>
-    <div class="post__footer">
-        <div class="likes js-likes">
-            <div class="likes__cta">
-                <a class="like-button  js-like-button" href="#" data-postid="1">
-                    <i class="like-button__icon fas fa-thumbs-up" aria-hidden="true"></i>
-                    <span class="like-button__label">Mi Piace</span>
-                </a>
-            </div>
-            <div class="likes__counter">
-                Piace a <b id="like-counter-1" class="js-likes-counter">${posts[i]["likes"]}</b> persone
-            </div>
-        </div> 
-    </div>            
-</div>` 
+    `;
 }
 
-document.getElementById("container").innerHTML += newPosts
+posts.forEach((element) => {
+    wrapperElementi.innerHTML += generaPost(element);
+});
+
+const bottoneLike = document.querySelectorAll(`.js-like-button`);
+const contatoreLIke = document.querySelectorAll(`.js-likes-counter`);
+
+
+for (let i = 0 ; i < bottoneLike.length ; i++){
+
+    const element = bottoneLike[i];
+
+    element.addEventListener('click', (event) => {
+        event.preventDefault();
+
+        if ( element.classList.contains('like-button--liked') ){
+            element.classList.remove('like-button--liked');
+            contatoreLIke[i].innerHTML = parseInt(contatoreLIke[i].innerHTML) - 1;
+            arrayLike.splice( arrayLike.indexOf(bottoneLike[i].getAttribute('data-postid') ));
+
+        } else {
+            element.classList.add('like-button--liked');
+            contatoreLIke[i].innerHTML = parseInt(contatoreLIke[i].innerHTML) + 1;
+            arrayLike.push(bottoneLike[i].getAttribute('data-postid'));
+        }
+        console.log(arrayLike)
+    })
+}
+
